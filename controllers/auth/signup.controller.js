@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../../models/users");
 const jwt = require("jsonwebtoken");
 
-const ALLOWED_ACCOUNT_TYPES = ["user", "seller", "admin"];
+const ALLOWED_ACCOUNT_TYPES = ["investor", "owner", "admin"];
 
 const signUp = async (req, res) => {
   try {

@@ -4,24 +4,28 @@ const mongoose = require("mongoose");
 const postsRoutes = require("./routers/posts.route.js");
 const todosRoutes = require("./routers/todos.route.js");
 const authRoutes = require("./routers/auth.route.js");
-// const cors = require("cors");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const corsOptions = {
+  origin: "http://localhost:3001", // your frontend
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // ✅ allow cookies and auth headers
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+
 console.log("MONGO_URL:", process.env.MONGO_URL);
 mongoose
   .connect(`${process.env.MONGO_URL}/${process.env.DB_NAME}`)
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// const corsOptions = {
-//   origin: "http://127.0.0.1:5500",
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-//   credentials: true,
-// };
-// app.use(cors(corsOptions));
 app.use("/posts", postsRoutes);
 app.use("/todos", todosRoutes);
 app.use("/auth", authRoutes);
