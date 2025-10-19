@@ -30,6 +30,10 @@ app.use("/posts", postsRoutes);
 app.use("/todos", todosRoutes);
 app.use("/auth", authRoutes);
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
