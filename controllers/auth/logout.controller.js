@@ -3,7 +3,7 @@ const logOut = async (req, res) => {
     res.cookie("token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NEXT_PUBLIC_SAME_SITE,
       expires: new Date(0),
     });
 
