@@ -3,7 +3,7 @@ const User = require("../models/users");
 
 const requireAuth = async (req, res, next) => {
   try {
-    // get token for web or mobile
+    // get token for web or mobile-
     const token =
       req.cookies?.token ||
       (req.headers.authorization && req.headers.authorization.split(" ")[1]);
