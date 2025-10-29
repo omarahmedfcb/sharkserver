@@ -20,7 +20,7 @@ const signIn = async (req, res) => {
     if (isRightPassword) {
       const token = jwt.sign(
         {
-          id: loggedUser._id,
+          _id: loggedUser._id,
           email: loggedUser.email,
           accountType: loggedUser.accountType,
         },
@@ -39,7 +39,7 @@ const signIn = async (req, res) => {
         success: true,
         token,
         user: {
-          id: loggedUser._id,
+          _id: loggedUser._id,
           firstName: loggedUser.firstName,
           lastName: loggedUser.lastName,
           email: loggedUser.email,

@@ -1,9 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const postsRoutes = require("./routers/posts.route.js");
-const todosRoutes = require("./routers/todos.route.js");
 const authRoutes = require("./routers/auth.route.js");
+const projectRoutes = require("./routers/projects.route.js");
 // const uploadRoutes = require("./routers/uploadpic.route.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -27,9 +26,8 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-app.use("/posts", postsRoutes);
-app.use("/todos", todosRoutes);
 app.use("/auth", authRoutes);
+app.use("/projects", projectRoutes);
 // app.use("/upload", uploadRoutes);
 
 app.get("/health", (req, res) => {

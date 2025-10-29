@@ -32,7 +32,7 @@ const signUp = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: newUser._id,
+        _id: newUser._id,
         email: newUser.email,
         accountType: newUser.accountType,
       },
@@ -51,7 +51,7 @@ const signUp = async (req, res) => {
       success: true,
       token,
       user: {
-        id: newUser._id,
+        _id: newUser._id,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
