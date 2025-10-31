@@ -3,15 +3,17 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const authRoutes = require("./routers/auth.route.js");
 const projectRoutes = require("./routers/projects.route.js");
+const chatbotRoutes = require("./routers/chatbot.route.js");
+const faqRoutes = require("./routers/faq.route.js");
 // const uploadRoutes = require("./routers/uploadpic.route.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const corsOptions = {
-  origin: "http://localhost:3001",
+  origin: ["http://localhost:3000", "http://localhost:3001"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -28,6 +30,8 @@ mongoose
 
 app.use("/auth", authRoutes);
 app.use("/projects", projectRoutes);
+app.use("/chatbot", chatbotRoutes);
+app.use("/faq", faqRoutes);
 // app.use("/upload", uploadRoutes);
 
 app.get("/health", (req, res) => {
