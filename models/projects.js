@@ -1,16 +1,28 @@
 // models/Project.js
 const mongoose = require("mongoose");
 
-const PROJECT_CATEGORIES = [
-  "Technology",
-  "E-Commerce",
-  "Food",
-  "Health",
-  "Education",
-  "Real Estate",
-  "Industrial",
-  "Other",
-];
+const PROJECT_CATEGORIES = {
+  en: [
+    "Technology",
+    "E-Commerce",
+    "Food",
+    "Health",
+    "Education",
+    "Real Estate",
+    "Industrial",
+    "Other",
+  ],
+  ar: [
+    "تكنولوجيا",
+    "تجارة إلكترونية",
+    "أطعمة",
+    "صحة",
+    "تعليم",
+    "عقارات",
+    "صناعي",
+    "أخرى",
+  ],
+};
 
 const STATUS = ["active", "closed"];
 
@@ -38,9 +50,8 @@ const projectSchema = new mongoose.Schema(
     description: { type: String, required: true },
     shortDesc: { type: String, required: true },
     category: {
-      type: String,
-      enum: PROJECT_CATEGORIES,
-      required: true,
+      en: { type: String, enum: PROJECT_CATEGORIES.en },
+      ar: { type: String, enum: PROJECT_CATEGORIES.ar },
     },
     status: {
       type: String,
@@ -90,4 +101,4 @@ const projectSchema = new mongoose.Schema(
 );
 
 const Project = mongoose.model("Project", projectSchema);
-module.exports = Project;
+module.exports = { Project, PROJECT_CATEGORIES };

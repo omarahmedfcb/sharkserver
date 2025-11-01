@@ -17,9 +17,8 @@ const userSchema = new Schema({
   ownedProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
   investedProjects: [
     {
-      project: { type: Schema.Types.ObjectId, ref: "Project" },
+      project: { type: Schema.Types.ObjectId, ref: "Project", required: true },
       percentage: { type: Number, required: true },
-      amount: { type: Number, required: true },
       investedAt: { type: Date, default: Date.now },
     },
   ],

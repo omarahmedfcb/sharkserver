@@ -1,4 +1,4 @@
-const Project = require("../../models/projects");
+const { Project, PROJECT_CATEGORIES } = require("../../models/projects");
 const User = require("../../models/users");
 
 const addProject = async (req, res) => {
@@ -29,8 +29,23 @@ const addProject = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+    if (category.en && !category.ar) {
+      const index = PROJECT_CATEGORIES.en.findIndex(
+        (ele) => ele === category.en
+      );
+      if (index !== -1) {
+        category.ar = PROJECT_CATEGORIES.ar[index];
+      }
+    } else if (!category.en && category.ar) {
+      const index = PROJECT_CATEGORIES.ar.findIndex(
+        (ele) => ele === category.ar
+      );
+      if (index !== -1) {
+        category.en = PROJECT_CATEGORIES.en[index];
+      }
+    }
 
-    const existingTitle = await User.findOne({ title });
+    const existingTitle = await Project.findOne({ title });
     if (existingTitle)
       return res.status(400).json({ message: "Title was used before" });
 

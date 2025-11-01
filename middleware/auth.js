@@ -15,7 +15,7 @@ const requireAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // fetch user from DB
-    const userFromDb = await User.findById(decoded.id).select(
+    const userFromDb = await User.findById(decoded._id).select(
       "firstName lastName email accountType investedProjects ownedProjects"
     );
 

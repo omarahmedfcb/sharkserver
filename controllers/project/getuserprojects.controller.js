@@ -11,7 +11,7 @@ const getUserProjects = async (req, res) => {
     if (user.accountType == "owner") {
       userProjects = user.ownedProjects;
     } else if (user.accountType == "investor") {
-      userProjects = user.investedProjects.map((element) => element.project);
+      userProjects = user.investedProjects;
     }
     res.status(200).json({
       success: true,
