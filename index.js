@@ -5,6 +5,8 @@ const authRoutes = require("./routers/auth.route.js");
 const projectRoutes = require("./routers/projects.route.js");
 const chatbotRoutes = require("./routers/chatbot.route.js");
 const faqRoutes = require("./routers/faq.route.js");
+const offersRoutes = require("./routers/offers.route.js");
+const notificationsRoutes = require("./routers/notifications.route.js");
 // const uploadRoutes = require("./routers/uploadpic.route.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -14,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:3001"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true,
 };
 
@@ -32,6 +34,8 @@ app.use("/auth", authRoutes);
 app.use("/projects", projectRoutes);
 app.use("/chatbot", chatbotRoutes);
 app.use("/faq", faqRoutes);
+app.use("/offers", offersRoutes);
+app.use("/notifications", notificationsRoutes);
 // app.use("/upload", uploadRoutes);
 
 app.get("/health", (req, res) => {

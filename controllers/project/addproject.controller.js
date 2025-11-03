@@ -79,6 +79,7 @@ const addProject = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Project added successfully",
+      newProjectId: newProject._id,
     });
   } catch (err) {
     console.error(err);

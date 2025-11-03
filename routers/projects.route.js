@@ -10,12 +10,16 @@ const {
 const {
   getUserProjects,
 } = require("../controllers/project/getuserprojects.controller");
+const {
+  deleteProject,
+} = require("../controllers/project/deleteproject.controller");
 const router = express.Router();
 
 router.post("/add", addProject);
 router.get("/", getAllProjects);
 router.get("/:id", getSingleProject);
 router.get("/user/:id", getUserProjects);
+router.delete("/delete/:id", deleteProject);
 // router.get("/me", requireAuth, async (req, res) => {
 //   try {
 //     res.status(200).json({ user: req.user });
