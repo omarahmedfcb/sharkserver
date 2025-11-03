@@ -19,7 +19,7 @@ router.post("/add", addProject);
 router.get("/", getAllProjects);
 router.get("/:id", getSingleProject);
 router.get("/user/:id", getUserProjects);
-router.delete("/delete/:id", deleteProject);
+router.delete("/delete/:id", requireAuth, deleteProject);
 // router.get("/me", requireAuth, async (req, res) => {
 //   try {
 //     res.status(200).json({ user: req.user });

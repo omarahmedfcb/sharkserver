@@ -7,7 +7,8 @@ const getSentOffers = async (req, res) => {
 
     const offers = await Offer.find({ offeredBy: userId })
       .populate("project", "title category")
-      .populate("offeredTo", "firstName lastName");
+      .populate("offeredTo", "firstName lastName")
+      .sort({ createdAt: -1 });
 
     res.status(201).json({
       success: true,

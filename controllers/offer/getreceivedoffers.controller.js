@@ -10,7 +10,8 @@ const getReceivedOffers = async (req, res) => {
       status: { $ne: "cancelled" },
     })
       .populate("project", "title category")
-      .populate("offeredBy", "firstName lastName");
+      .populate("offeredBy", "firstName lastName")
+      .sort({ createdAt: -1 });
 
     res.status(201).json({
       success: true,
