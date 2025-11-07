@@ -21,7 +21,7 @@ const requireAuth = async (req, res, next) => {
 
     // fetch user from DB
     const userFromDb = await User.findById(decoded._id).select(
-      "firstName profilePicUrl lastName email accountType investedProjects ownedProjects"
+      "firstName lastName email accountType profilePicUrl company phone bio investedProjects ownedProjects"
     );
 
     if (!userFromDb) return res.status(401).json({ message: "User not found" });
@@ -33,6 +33,11 @@ const requireAuth = async (req, res, next) => {
       email: userFromDb.email,
       accountType: userFromDb.accountType,
       profilePicUrl: userFromDb.profilePicUrl,
+      company: userFromDb.company,
+      phone: userFromDb.phone,
+      bio: userFromDb.bio,
+    ownedProjects: userFromDb.ownedProjects,
+    investedProjects: userFromDb.investedProjects,
     };
 
     next();

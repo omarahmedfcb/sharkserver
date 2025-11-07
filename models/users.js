@@ -7,6 +7,9 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
   profilePicUrl: String,
+  company: { type: String, default: "" },
+  phone: { type: String, default: "" },
+  bio: { type: String, default: "" },
   accountType: {
     type: String,
     enum: ["investor", "owner", "admin"],

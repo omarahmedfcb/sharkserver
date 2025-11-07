@@ -10,6 +10,8 @@ const {
   uploadProfilePicture,
   upload,
 } = require("../controllers/auth/profilepic.controller");
+const { updateProfile } = require("../controllers/auth/updateprofile.controller");
+const { changePassword } = require("../controllers/auth/changepassword.controller");
 const router = express.Router();
 
 const authLimiter = rateLimit({
@@ -41,5 +43,7 @@ router.get("/me", requireAuth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+router.patch("/profile", requireAuth, updateProfile);
+router.patch("/password", requireAuth, changePassword);
 
 module.exports = router;
