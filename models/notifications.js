@@ -14,6 +14,7 @@ const notificationSchema = new Schema(
         "offer_accepted",
         "offer_rejected",
         "offer_cancelled",
+        "message",
       ],
     },
 
