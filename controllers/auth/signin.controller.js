@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../../models/users");
 const jwt = require("jsonwebtoken");
+const { isValidEmail, sanitizeString } = require("../../utils/validators");
 
 const signIn = async (req, res) => {
   try {
@@ -10,11 +11,15 @@ const signIn = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const loggedUser = await User.findOne({ email });
+    const normalizedEmail = sanitizeString(email).toLowerCase();
+
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ message: "Enter a valid email address" });
+    }
+
+    const loggedUser = await User.findOne({ email: normalizedEmail });
     if (loggedUser) {
       isRightPassword = await bcrypt.compare(password, loggedUser.password);
-    } else {
-      return res.status(400).json({ message: "Email was not found" });
     }
 
     if (isRightPassword) {
@@ -31,11 +36,11 @@ const signIn = async (req, res) => {
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NEXT_PUBLIC_SAME_SITE,
+        sameSite: process.env.NEXT_PUBLIC_SAME_SITE || "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         token,
         user: {
@@ -48,7 +53,9 @@ const signIn = async (req, res) => {
         message: "User Logged in successfully",
       });
     } else {
-      return res.status(400).json({ message: "Password is incorrect" });
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password" });
     }
   } catch (err) {
     console.error(err);

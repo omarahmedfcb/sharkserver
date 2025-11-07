@@ -13,9 +13,14 @@ const requireAuth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded?._id || decoded?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
 
     // fetch user from DB
-    const userFromDb = await User.findById(decoded.id).select(
+    const userFromDb = await User.findById(userId).select(
       "firstName lastName email accountType investedProjects ownedProjects"
     );
 
