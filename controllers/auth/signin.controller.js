@@ -49,6 +49,7 @@ const signIn = async (req, res) => {
           lastName: loggedUser.lastName,
           email: loggedUser.email,
           accountType: loggedUser.accountType,
+          profilePicUrl: loggedUser.profilePicUrl,
         },
         message: "User Logged in successfully",
       });
