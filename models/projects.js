@@ -59,12 +59,10 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
     totalPrice: { type: Number, required: true },
-    images: [
-      {
-        type: String,
-        default: "",
-      },
-    ],
+    image: {
+      type: String,
+      default: "",
+    },
     progress: { type: Number, default: 0 },
 
     // Project owner
