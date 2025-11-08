@@ -16,7 +16,7 @@ const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+app.set("trust proxy", 1);
 const corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:3001"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
