@@ -37,12 +37,5 @@ router.put(
 );
 router.delete("/:projectId/image", requireAuth, removeProjectImage);
 router.put("/edit/:id", requireAuth, upload.single("image"), editProject);
-// router.get("/me", requireAuth, async (req, res) => {
-//   try {
-//     res.status(200).json({ user: req.user });
-//   } catch (err) {
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
 
 module.exports = router;

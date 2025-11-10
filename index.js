@@ -8,8 +8,9 @@ const chatbotRoutes = require("./routers/chatbot.route.js");
 const faqRoutes = require("./routers/faq.route.js");
 const offersRoutes = require("./routers/offers.route.js");
 const chatRoutes = require("./routers/chat.route.js");
+const blogRoutes = require("./routers/blog.route.js");
 const notificationsRoutes = require("./routers/notifications.route.js");
-// const uploadRoutes = require("./routers/uploadpic.route.js");
+
 const cors = require("cors");
 const http = require("http");
 const cookieParser = require("cookie-parser");
@@ -40,7 +41,7 @@ app.use("/faq", faqRoutes);
 app.use("/offers", offersRoutes);
 app.use("/notifications", notificationsRoutes);
 app.use("/chat", chatRoutes);
-// app.use("/upload", uploadRoutes);
+app.use("/blog", blogRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
