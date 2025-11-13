@@ -5,14 +5,8 @@ const { Notification } = require("../../models/notifications");
 
 const sendOffer = async (req, res) => {
   try {
-    const {
-      project,
-      offeredBy,
-      offeredTo,
-      percentage,
-      amount,
-      proposalLetter,
-    } = req.body;
+    const offeredBy = req.user._id;
+    const { project, offeredTo, percentage, amount, proposalLetter } = req.body;
     if (!project || !offeredBy || !offeredTo || !percentage || !amount) {
       return res.status(400).json({ message: "Missing required fields" });
     }

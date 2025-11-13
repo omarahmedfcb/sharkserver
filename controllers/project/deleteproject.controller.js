@@ -6,16 +6,34 @@ const deleteProject = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
-    const deletedProject = await Project.findByIdAndDelete(id);
-    if (!deletedProject) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Project not found" });
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
     }
 
-    await User.findByIdAndUpdate(userId, {
+    if (
+      project.owner.toString() !== userId.toString() &&
+      req.user.accountType !== "admin"
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "You have no authority to delete this project",
+      });
+    }
+
+    await Project.findByIdAndDelete(id);
+
+    await User.findByIdAndUpdate(project.owner, {
       $pull: { ownedProjects: id },
     });
+
+    await User.updateMany(
+      { "investedProjects.project": id },
+      { $pull: { investedProjects: { project: id } } }
+    );
 
     res.status(200).json({
       success: true,

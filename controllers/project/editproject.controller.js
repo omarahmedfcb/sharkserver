@@ -18,7 +18,10 @@ const editProject = async (req, res) => {
     }
 
     // Check if user is the owner
-    if (project.owner.toString() !== req.user._id.toString()) {
+    if (
+      project.owner.toString() !== req.user._id.toString() &&
+      req.user.accountType !== "admin"
+    ) {
       return res
         .status(403)
         .json({ message: "Unauthorized: You don't own this project" });

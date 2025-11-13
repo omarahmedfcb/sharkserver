@@ -1,4 +1,5 @@
 const Post = require("../../models/posts");
+const Comment = require("../../models/comments");
 
 const deletePost = async (req, res) => {
   try {
@@ -12,20 +13,23 @@ const deletePost = async (req, res) => {
         .json({ success: false, message: "Post not found" });
     }
 
-    if (post.author.toString() !== userId.toString()) {
-      if (req.user.accountType !== "admin") {
-        return res.status(403).json({
-          success: false,
-          message: "You are not allowed to delete this post",
-        });
-      }
+    if (
+      post.author.toString() !== userId.toString() &&
+      req.user.accountType !== "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to delete this post",
+      });
     }
+
+    await Comment.deleteMany({ post: post._id });
 
     await Post.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: "Post deleted successfully",
+      message: "Post and related comments deleted successfully",
     });
   } catch (e) {
     console.error(e);

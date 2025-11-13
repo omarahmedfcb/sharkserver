@@ -3,7 +3,15 @@ const { Project } = require("../../models/projects");
 const getSingleProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id);
+    const project = await Project.findById(id)
+      .populate({
+        path: "investors.user",
+        select: "firstName lastName profilePicUrl",
+      })
+      .populate({
+        path: "owner",
+        select: "firstName lastName profilePicUrl",
+      });
 
     res.status(200).json({
       success: true,

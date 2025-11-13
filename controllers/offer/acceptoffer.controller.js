@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const { Notification } = require("../../models/notifications");
 const { Offer } = require("../../models/offers");
 const { Project } = require("../../models/projects");
+const User = require("../../models/users");
 
 const acceptOffer = async (req, res) => {
   const session = await mongoose.startSession();
@@ -12,53 +13,69 @@ const acceptOffer = async (req, res) => {
 
     const offer = await Offer.findById(id).session(session);
     if (!offer || offer.status !== "pending") {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({
-        success: false,
-        message: "Offer not found or already processed",
-      });
+      throw new Error("Offer not found or already processed");
     }
 
     const project = await Project.findById(offer.project).session(session);
-    if (!project) {
-      await session.abortTransaction();
-      session.endSession();
-      return res
-        .status(404)
-        .json({ success: false, message: "Project not found" });
-    }
+    if (!project) throw new Error("Project not found");
 
     if (offer.percentage > project.availablePercentage) {
-      await session.abortTransaction();
-      session.endSession();
-      return res
-        .status(400)
-        .json({ success: false, message: "Not enough available percentage" });
+      throw new Error("Not enough available percentage");
     }
 
     offer.status = "accepted";
     await offer.save({ session });
 
+    const existingInvestor = project.investors.find(
+      (inv) => inv.user.toString() === offer.offeredBy.toString()
+    );
+
+    if (existingInvestor) {
+      existingInvestor.percentage += offer.percentage;
+      existingInvestor.amount += offer.amount;
+    } else {
+      project.investors.push({
+        user: offer.offeredBy,
+        percentage: offer.percentage,
+        amount: offer.amount,
+      });
+    }
+
     project.availablePercentage -= offer.percentage;
     project.progress += offer.percentage;
-    project.investors.push({
-      user: offer.offeredBy,
-      percentage: offer.percentage,
-      amount: offer.amount,
-    });
     await project.save({ session });
+
+    const user = await User.findById(offer.offeredBy).session(session);
+    if (!user) throw new Error("User not found");
+    const existingInvestment = user.investedProjects.find(
+      (p) => p.project.toString() === project._id.toString()
+    );
+
+    if (existingInvestment) {
+      existingInvestment.percentage += offer.percentage;
+      existingInvestment.amount += offer.amount;
+    } else {
+      user.investedProjects.push({
+        project: project._id,
+        percentage: offer.percentage,
+        amount: offer.amount,
+        investedAt: new Date(),
+      });
+    }
+
+    await user.save({ session });
 
     await session.commitTransaction();
     session.endSession();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Offer accepted successfully" });
+    res.status(200).json({
+      success: true,
+      message: "Offer accepted successfully",
+    });
 
     Notification.create({
       user: offer.offeredBy,
-      message: `Your Offer for ${project.title} was accepted`,
+      message: `Your offer for ${project.title} was accepted`,
       link: `/projects/${project._id}`,
       type: "offer_accepted",
     }).catch((err) => console.error("Notification creation failed:", err));

@@ -15,7 +15,7 @@ const {
 } = require("../controllers/offer/getsingleoffer.controller");
 const router = express.Router();
 
-router.post("/send", sendOffer);
+router.post("/send", requireAuth, sendOffer);
 router.get("/sent", requireAuth, getSentOffers);
 router.get("/received", requireAuth, getReceivedOffers);
 router.patch("/accept/:id", requireAuth, acceptOffer);
