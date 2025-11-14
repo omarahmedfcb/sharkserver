@@ -4,11 +4,19 @@ const User = require("../../models/users");
 const getReceivedOffers = async (req, res) => {
   try {
     const userId = req.user._id;
+    const { projectId } = req.query;
 
-    const offers = await Offer.find({
+    const query = {
       offeredTo: userId,
       status: { $ne: "cancelled" },
-    })
+    };
+
+    // Filter by projectId if provided
+    if (projectId) {
+      query.project = projectId;
+    }
+
+    const offers = await Offer.find(query)
       .populate("project", "title category")
       .populate("offeredBy", "firstName lastName")
       .sort({ createdAt: -1 });
