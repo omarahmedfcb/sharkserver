@@ -44,12 +44,30 @@ const sendOffer = async (req, res) => {
       message: "Offer sent successfully",
     });
 
-    Notification.create({
+    const notification = await Notification.create({
       user: offeredTo,
       message: `You received an Offer for ${requestedProject.title}`,
       link: `/account/offers/${createdOffer._id}`,
       type: "offer_sent",
-    }).catch((err) => console.error("Notification creation failed:", err));
+    }).catch((err) => {
+      console.error("Notification creation failed:", err);
+      return null;
+    });
+
+    // Broadcast notification via Socket.IO
+    if (notification) {
+      const io = req.app.get("io");
+      if (io) {
+        io.to(`user_${offeredTo}`).emit("notification", {
+          _id: notification._id,
+          message: notification.message,
+          link: notification.link,
+          type: notification.type,
+          isRead: notification.isRead,
+          createdAt: notification.createdAt,
+        });
+      }
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

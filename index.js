@@ -15,6 +15,8 @@ const cors = require("cors");
 const http = require("http");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
+const jwt = require("jsonwebtoken");
+const User = require("./models/users");
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.set("trust proxy", 1);
@@ -57,12 +59,53 @@ const io = new Server(server, {
 });
 app.set("io", io);
 
+// Socket.IO JWT Authentication Middleware
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
+    
+    if (!token) {
+      return next(new Error("Authentication error: No token provided"));
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded?._id || decoded?.id;
+
+    if (!userId) {
+      return next(new Error("Authentication error: Invalid token payload"));
+    }
+
+    const user = await User.findById(userId).select("_id firstName lastName email accountType");
+    
+    if (!user) {
+      return next(new Error("Authentication error: User not found"));
+    }
+
+    socket.userId = user._id.toString();
+    socket.user = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      accountType: user.accountType,
+    };
+
+    next();
+  } catch (err) {
+    console.error("Socket authentication error:", err.message);
+    next(new Error("Authentication error: Invalid or expired token"));
+  }
+});
+
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+  console.log(`User ${socket.user?.firstName} (${socket.userId}) connected:`, socket.id);
+
+  // Join user's personal notification room
+  socket.join(`user_${socket.userId}`);
 
   socket.on("join_conversation", (conversationId) => {
     socket.join(conversationId);
-    console.log(`User ${socket.id} joined conversation ${conversationId}`);
+    console.log(`User ${socket.userId} joined conversation ${conversationId}`);
   });
 
   socket.on("send_message", (data) => {
@@ -70,7 +113,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
+    console.log(`User ${socket.userId} disconnected:`, socket.id);
   });
 });
 

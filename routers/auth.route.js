@@ -10,6 +10,7 @@ const {
   uploadProfilePicture,
   upload,
 } = require("../controllers/auth/profilepic.controller");
+const { updateProfile } = require("../controllers/auth/updateProfile.controller");
 const router = express.Router();
 
 const authLimiter = rateLimit({
@@ -34,6 +35,7 @@ router.post(
 );
 
 router.delete("/remove-profile-picture", requireAuth, removeProfilePicture);
+router.patch("/profile", requireAuth, updateProfile);
 router.get("/me", requireAuth, async (req, res) => {
   try {
     res.status(200).json({ user: req.user });
