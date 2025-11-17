@@ -13,6 +13,10 @@ const userSchema = new Schema({
     default: "investor",
     required: true,
   },
+  banned: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: { type: Date, default: Date.now },
   ownedProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
   investedProjects: [

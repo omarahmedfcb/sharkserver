@@ -18,7 +18,12 @@ const signUp = async (req, res) => {
     const normalizedLastName = normalizeName(lastName || "");
     const normalizedEmail = sanitizeString(email || "").toLowerCase();
 
-    if (!normalizedFirstName || !normalizedLastName || !normalizedEmail || !password) {
+    if (
+      !normalizedFirstName ||
+      !normalizedLastName ||
+      !normalizedEmail ||
+      !password
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -55,6 +60,7 @@ const signUp = async (req, res) => {
       email: normalizedEmail,
       password: hashedPassword,
       accountType: type,
+      banned,
     });
 
     const token = jwt.sign(

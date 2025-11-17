@@ -125,6 +125,7 @@ const googleAuth = async (req, res) => {
         email: user.email,
         accountType: user.accountType,
         profilePicUrl: user.profilePicUrl,
+        banned: user.banned,
       },
       message: isNewUser
         ? "Account created with Google successfully"

@@ -33,6 +33,7 @@ const requireAuth = async (req, res, next) => {
       email: userFromDb.email,
       accountType: userFromDb.accountType,
       profilePicUrl: userFromDb.profilePicUrl,
+      banned: userFromDb.banned,
     };
 
     next();

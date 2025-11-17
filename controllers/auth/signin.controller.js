@@ -50,6 +50,7 @@ const signIn = async (req, res) => {
           email: loggedUser.email,
           accountType: loggedUser.accountType,
           profilePicUrl: loggedUser.profilePicUrl,
+          banned: loggedUser.banned,
         },
         message: "User Logged in successfully",
       });
