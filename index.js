@@ -30,6 +30,7 @@ const corsOptions = {
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true,
+  transports: ["websocket"],
 };
 
 app.use(cors(corsOptions));
