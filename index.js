@@ -10,6 +10,7 @@ const offersRoutes = require("./routers/offers.route.js");
 const chatRoutes = require("./routers/chat.route.js");
 const blogRoutes = require("./routers/blog.route.js");
 const notificationsRoutes = require("./routers/notifications.route.js");
+const dashboardRoutes = require("./routers/dashboard.route.js");
 
 const cors = require("cors");
 const http = require("http");
@@ -44,6 +45,7 @@ app.use("/offers", offersRoutes);
 app.use("/notifications", notificationsRoutes);
 app.use("/chat", chatRoutes);
 app.use("/blog", blogRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
