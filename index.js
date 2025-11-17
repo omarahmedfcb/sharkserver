@@ -30,7 +30,6 @@ const corsOptions = {
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true,
-  transports: ["websocket"],
 };
 
 app.use(cors(corsOptions));
@@ -68,6 +67,8 @@ const io = new Server(server, {
       "https://rococo-fairy-e1d6f8.netlify.app",
     ],
     credentials: true,
+    transports: ["websocket", "polling"],
+    allowEIO3: true,
   },
 });
 app.set("io", io);
