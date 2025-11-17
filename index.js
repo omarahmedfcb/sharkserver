@@ -11,6 +11,7 @@ const chatRoutes = require("./routers/chat.route.js");
 const blogRoutes = require("./routers/blog.route.js");
 const adminRoutes = require("./routers/admin.route.js");
 const notificationsRoutes = require("./routers/notifications.route.js");
+const dashboardRoutes = require("./routers/dashboard.route.js");
 
 const cors = require("cors");
 const http = require("http");
@@ -45,6 +46,7 @@ app.use("/offers", offersRoutes);
 app.use("/notifications", notificationsRoutes);
 app.use("/chat", chatRoutes);
 app.use("/blog", blogRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.use("/admin", adminRoutes);
 
 app.get("/health", (req, res) => {
@@ -64,8 +66,10 @@ app.set("io", io);
 // Socket.IO JWT Authentication Middleware
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(" ")[1];
-    
+    const token =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.authorization?.split(" ")[1];
+
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
     }
@@ -77,8 +81,10 @@ io.use(async (socket, next) => {
       return next(new Error("Authentication error: Invalid token payload"));
     }
 
-    const user = await User.findById(userId).select("_id firstName lastName email accountType");
-    
+    const user = await User.findById(userId).select(
+      "_id firstName lastName email accountType"
+    );
+
     if (!user) {
       return next(new Error("Authentication error: User not found"));
     }
@@ -100,7 +106,10 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log(`User ${socket.user?.firstName} (${socket.userId}) connected:`, socket.id);
+  console.log(
+    `User ${socket.user?.firstName} (${socket.userId}) connected:`,
+    socket.id
+  );
 
   // Join user's personal notification room
   socket.join(`user_${socket.userId}`);
