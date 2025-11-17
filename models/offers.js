@@ -13,6 +13,13 @@ const offerSchema = new Schema({
     enum: ["pending", "accepted", "rejected", "cancelled"],
     default: "pending",
   },
+  paymentIntentId: { type: String, required: false },
+  transactionId: { type: String, required: false },
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "processing", "completed", "failed", "refunded"],
+    required: false,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

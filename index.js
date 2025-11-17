@@ -12,6 +12,7 @@ const blogRoutes = require("./routers/blog.route.js");
 const adminRoutes = require("./routers/admin.route.js");
 const notificationsRoutes = require("./routers/notifications.route.js");
 const dashboardRoutes = require("./routers/dashboard.route.js");
+const paymentRoutes = require("./routers/payment.route.js");
 
 const cors = require("cors");
 const http = require("http");
@@ -48,6 +49,7 @@ app.use("/chat", chatRoutes);
 app.use("/blog", blogRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/admin", adminRoutes);
+app.use("/payment", paymentRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
