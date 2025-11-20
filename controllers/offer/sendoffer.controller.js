@@ -29,7 +29,11 @@ const sendOffer = async (req, res) => {
     if (!sender || !receiver) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    if (receiver?.banned) {
+      return res
+        .status(400)
+        .json({ error: "You can't send an offer to a banned user" });
+    }
     const createdOffer = await Offer.create({
       project,
       offeredBy,

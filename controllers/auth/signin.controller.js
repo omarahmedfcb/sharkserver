@@ -21,6 +21,9 @@ const signIn = async (req, res) => {
     if (loggedUser) {
       isRightPassword = await bcrypt.compare(password, loggedUser.password);
     }
+    if (loggedUser.banned) {
+      return res.status(401).json({ message: "This user is banned" });
+    }
 
     if (isRightPassword) {
       const token = jwt.sign(
@@ -55,9 +58,7 @@ const signIn = async (req, res) => {
         message: "User Logged in successfully",
       });
     } else {
-      return res
-        .status(401)
-        .json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (err) {
     console.error(err);

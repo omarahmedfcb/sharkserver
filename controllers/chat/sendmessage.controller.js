@@ -1,6 +1,7 @@
 const Conversation = require("../../models/conversation");
 const Message = require("../../models/messages");
 const { Notification } = require("../../models/notifications");
+const User = require("../../models/users");
 
 const sendMessage = async (req, res) => {
   try {
@@ -11,6 +12,12 @@ const sendMessage = async (req, res) => {
       return res
         .status(400)
         .json({ error: "Receiver and content are required" });
+    }
+    const receiver = await User.findById(receiverId).select("banned");
+    if (receiver?.banned) {
+      return res
+        .status(400)
+        .json({ error: "You can't send a message to a banned user" });
     }
 
     // Validate that sender and receiver are different
