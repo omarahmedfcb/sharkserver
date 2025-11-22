@@ -60,7 +60,7 @@ const signUp = async (req, res) => {
       email: normalizedEmail,
       password: hashedPassword,
       accountType: type,
-      banned,
+      // `banned` will use the default value from the schema (false)
     });
 
     const token = jwt.sign(
