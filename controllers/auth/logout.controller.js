@@ -2,8 +2,8 @@ const logOut = async (req, res) => {
   try {
     res.cookie("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NEXT_PUBLIC_SAME_SITE,
+      secure: true,
+      sameSite: "none",
       expires: new Date(0),
     });
 
