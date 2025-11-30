@@ -69,18 +69,29 @@ const io = new Server(server, {
       "https://rococo-fairy-e1d6f8.netlify.app",
     ],
     credentials: true,
-    transports: ["websocket", "polling"],
-    allowEIO3: true,
+    methods: ["GET", "POST"],
   },
+  transports: ["websocket", "polling"],
+  allowEIO3: true,
 });
 app.set("io", io);
 
 // Socket.IO JWT Authentication Middleware
 io.use(async (socket, next) => {
   try {
-    const token =
+    // Try to get token from auth header first (for explicit auth)
+    let token =
       socket.handshake.auth?.token ||
       socket.handshake.headers?.authorization?.split(" ")[1];
+
+    // If no token in auth, try to get it from cookies
+    if (!token && socket.handshake.headers.cookie) {
+      const cookies = socket.handshake.headers.cookie.split("; ");
+      const tokenCookie = cookies.find((c) => c.startsWith("token="));
+      if (tokenCookie) {
+        token = tokenCookie.split("=")[1];
+      }
+    }
 
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
