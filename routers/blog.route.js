@@ -25,6 +25,11 @@ const {
   likeComment,
   unlikeComment,
 } = require("../controllers/blog/likecomment.controller");
+const {
+  removePostImage,
+  updatePostImage,
+  upload,
+} = require("../controllers/blog/uploadpostimage.controller");
 
 const router = express.Router();
 //dashboard
@@ -34,10 +39,21 @@ router.get("/user/comments", requireAuth, getUserComments);
 router.get("/", optionalAuth, getAllPosts);
 router.get("/post/:id", optionalAuth, getPostComments);
 
-router.post("/post/add", requireAuth, addPost);
+router.post("/post/add", requireAuth, upload.single("image"), addPost);
 router.post("/comment/add", requireAuth, addComment);
 router.post("/post/delete/:id", requireAuth, deletePost);
 router.post("/comment/delete/:id", requireAuth, deleteComment);
+
+//images
+router.post(
+  "/post/:postId/image",
+  requireAuth,
+  upload.single("image"),
+  updatePostImage
+);
+router.delete("/post/:postId/image", requireAuth, removePostImage);
+
+//likes
 router.post("/like/post/:id", requireAuth, likePost);
 router.delete("/like/post/:id", requireAuth, unlikePost);
 router.post("/like/comment/:id", requireAuth, likeComment);

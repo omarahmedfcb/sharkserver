@@ -29,6 +29,7 @@ const postSchema = new Schema(
       type: Number,
       default: 0,
     },
+    imageUrl: String,
   },
   { timestamps: true }
 );
