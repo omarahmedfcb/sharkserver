@@ -23,6 +23,9 @@ const deleteComment = async (req, res) => {
     }
 
     await Comment.findByIdAndDelete(id);
+    const meantPost = await Post.findById(comment.post).select("commentsCount");
+    meantPost.commentsCount -= 1;
+    await meantPost.save();
 
     res.status(200).json({
       success: true,

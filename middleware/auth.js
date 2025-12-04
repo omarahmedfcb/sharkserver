@@ -43,4 +43,24 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { requireAuth };
+const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded._id).select("-password");
+
+    req.user = user || null;
+    next();
+  } catch (err) {
+    req.user = null;
+    next();
+  }
+};
+
+module.exports = { requireAuth, optionalAuth };
