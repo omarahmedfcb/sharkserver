@@ -36,10 +36,17 @@ const signIn = async (req, res) => {
         { expiresIn: "7d" }
       );
 
+      // Determine cookie settings based on environment
+      // For cross-origin (production): sameSite: "none" requires secure: true
+      // For same-origin (localhost): sameSite: "lax" with secure: false
+      const origin = req.headers.origin || req.headers.referer || '';
+      const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+      const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+      
       res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: isSecure && !isLocalhost, // false for localhost, true for production
+        sameSite: isLocalhost ? "lax" : "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
