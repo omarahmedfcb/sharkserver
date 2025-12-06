@@ -30,6 +30,8 @@ const {
   updatePostImage,
   upload,
 } = require("../controllers/blog/uploadpostimage.controller");
+const { editPost } = require("../controllers/blog/editpost.controller");
+const { editComment } = require("../controllers/blog/editcomment.controller");
 
 const router = express.Router();
 //dashboard
@@ -41,6 +43,8 @@ router.get("/post/:id", optionalAuth, getPostComments);
 
 router.post("/post/add", requireAuth, upload.single("image"), addPost);
 router.post("/comment/add", requireAuth, addComment);
+router.put("/post/edit/:id", requireAuth, upload.single("image"), editPost);
+router.put("/comment/edit/:id", requireAuth, editComment);
 router.post("/post/delete/:id", requireAuth, deletePost);
 router.post("/comment/delete/:id", requireAuth, deleteComment);
 
