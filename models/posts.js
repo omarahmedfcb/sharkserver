@@ -19,16 +19,17 @@ const postSchema = new Schema(
       maxlength: 2000,
     },
 
-    // likes: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "User",
-    //   },
-    // ],
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     commentsCount: {
       type: Number,
       default: 0,
     },
+    imageUrl: String,
   },
   { timestamps: true }
 );

@@ -21,7 +21,11 @@ const addComment = async (req, res) => {
 
     (async () => {
       try {
-        const meantPost = await Post.findById(post).select("author");
+        const meantPost = await Post.findById(post).select(
+          "author commentsCount"
+        );
+        meantPost.commentsCount += 1;
+        await meantPost.save();
         if (meantPost && meantPost.author.toString() !== author.toString()) {
           await Notification.create({
             user: meantPost.author,

@@ -16,6 +16,7 @@ const notificationSchema = new Schema(
         "offer_cancelled",
         "message",
         "comment",
+        "like",
       ],
     },
 

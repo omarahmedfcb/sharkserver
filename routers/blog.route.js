@@ -1,5 +1,5 @@
 const express = require("express");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, optionalAuth } = require("../middleware/auth");
 const { getAllPosts } = require("../controllers/blog/getallposts.controller");
 const { addPost } = require("../controllers/blog/addpost.controller");
 const { addComment } = require("../controllers/blog/addcomment.controller");
@@ -17,19 +17,47 @@ const { getUserPosts } = require("../controllers/blog/getuserposts.controller");
 const {
   getUserComments,
 } = require("../controllers/blog/getusercomments.controller");
+const {
+  likePost,
+  unlikePost,
+} = require("../controllers/blog/likepost.controller");
+const {
+  likeComment,
+  unlikeComment,
+} = require("../controllers/blog/likecomment.controller");
+const {
+  removePostImage,
+  updatePostImage,
+  upload,
+} = require("../controllers/blog/uploadpostimage.controller");
 
 const router = express.Router();
 //dashboard
 router.get("/user/posts", requireAuth, getUserPosts);
 router.get("/user/comments", requireAuth, getUserComments);
 
-router.get("/", getAllPosts);
-router.get("/post/:id", getPostComments);
+router.get("/", optionalAuth, getAllPosts);
+router.get("/post/:id", optionalAuth, getPostComments);
 
-router.post("/post/add", requireAuth, addPost);
+router.post("/post/add", requireAuth, upload.single("image"), addPost);
 router.post("/comment/add", requireAuth, addComment);
 router.post("/post/delete/:id", requireAuth, deletePost);
 router.post("/comment/delete/:id", requireAuth, deleteComment);
-router.get("/:id", getSinglePost);
+
+//images
+router.post(
+  "/post/:postId/image",
+  requireAuth,
+  upload.single("image"),
+  updatePostImage
+);
+router.delete("/post/:postId/image", requireAuth, removePostImage);
+
+//likes
+router.post("/like/post/:id", requireAuth, likePost);
+router.delete("/like/post/:id", requireAuth, unlikePost);
+router.post("/like/comment/:id", requireAuth, likeComment);
+router.delete("/like/comment/:id", requireAuth, unlikeComment);
+router.get("/:id", optionalAuth, getSinglePost);
 
 module.exports = router;
