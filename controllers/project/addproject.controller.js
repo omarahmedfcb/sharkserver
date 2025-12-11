@@ -1,10 +1,10 @@
 const { Project, PROJECT_CATEGORIES } = require("../../models/projects");
 const User = require("../../models/users");
 const { uploadProjectImage } = require("./uploadimage.controller");
+const { uploadProjectDocument } = require("./uploaddocument.controller");
 
 const addProject = async (req, res) => {
   try {
-    // Parse the category JSON string
     const category = req.body.category ? JSON.parse(req.body.category) : null;
 
     const {
@@ -16,11 +16,21 @@ const addProject = async (req, res) => {
       owner,
       availablePercentage,
       expectedROI,
-      potentialRisks,
-      keyBenefits,
-      managementTeam,
     } = req.body;
 
+    // Parse arrays from JSON strings
+    const potentialRisks = req.body.potentialRisks
+      ? JSON.parse(req.body.potentialRisks)
+      : [];
+    const keyBenefits = req.body.keyBenefits
+      ? JSON.parse(req.body.keyBenefits)
+      : [];
+    const timeline = req.body.timeline ? JSON.parse(req.body.timeline) : [];
+    const documentTitles = req.body.documentTitles
+      ? JSON.parse(req.body.documentTitles)
+      : [];
+
+    // Validation
     if (
       !title ||
       !description ||
@@ -62,6 +72,18 @@ const addProject = async (req, res) => {
       return res.status(400).json({ message: "Invalid ROI" });
     }
 
+    // Validate documents
+    if (req.files && req.files.documents) {
+      if (req.files.documents.length > 3) {
+        return res.status(400).json({ message: "Maximum 3 documents allowed" });
+      }
+      if (req.files.documents.length !== documentTitles.length) {
+        return res
+          .status(400)
+          .json({ message: "Each document must have a title" });
+      }
+    }
+
     // Create project first
     const newProject = await Project.create({
       title,
@@ -71,30 +93,60 @@ const addProject = async (req, res) => {
       category,
       totalPrice: Number(totalPrice),
       owner,
-      image: "", // Empty initially
+      image: "",
       availablePercentage: availablePercentage
         ? Number(availablePercentage)
         : undefined,
       expectedROI: Number(expectedROI),
       potentialRisks,
       keyBenefits,
-      managementTeam,
+      timeline,
+      documents: [],
     });
 
-    // Upload image if provided
-    if (req.file) {
+    // Upload main image if provided
+    if (req.files && req.files.image && req.files.image[0]) {
       try {
         const imageUrl = await uploadProjectImage(
-          req.file.buffer,
+          req.files.image[0].buffer,
           newProject._id
         );
         newProject.image = imageUrl;
-        await newProject.save();
       } catch (imageError) {
         console.error("Error uploading image:", imageError);
-        // Continue without image - it's optional
       }
     }
+
+    // Upload documents if provided
+    if (req.files && req.files.documents) {
+      const uploadedDocuments = [];
+
+      for (let i = 0; i < req.files.documents.length; i++) {
+        try {
+          const file = req.files.documents[i];
+          const title = documentTitles[i];
+
+          const fileUrl = await uploadProjectDocument(
+            file.buffer,
+            newProject._id,
+            file.originalname
+          );
+
+          uploadedDocuments.push({
+            title,
+            fileUrl,
+            uploadedAt: new Date(),
+          });
+        } catch (docError) {
+          console.error("Error uploading document:", docError);
+          // Continue with other documents
+        }
+      }
+
+      newProject.documents = uploadedDocuments;
+    }
+
+    await newProject.save();
 
     await User.findByIdAndUpdate(owner, {
       $push: { ownedProjects: newProject._id },

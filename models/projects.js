@@ -26,22 +26,27 @@ const PROJECT_CATEGORIES = {
 
 const STATUS = ["active", "closed"];
 
-const managementTeamSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  role: { type: String, required: true },
-  image: { type: String },
-});
-
 const investorSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   percentage: { type: Number, required: true },
   investedAt: { type: Date, default: Date.now },
 });
 
-const milestoneSchema = new mongoose.Schema({
+const documentSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  completion: { type: Number, required: true },
-  description: { type: String, required: true },
+  fileUrl: { type: String, required: true },
+  uploadedAt: { type: Date, default: Date.now },
+});
+
+const timelineSchema = new mongoose.Schema({
+  phase: { type: String, required: true },
+  title: { type: String, required: true },
+  date: { type: String, required: true },
+  status: {
+    type: String,
+    enum: ["completed", "in-progress", "upcoming"],
+    default: "upcoming",
+  },
 });
 
 const projectSchema = new mongoose.Schema(
@@ -79,19 +84,19 @@ const projectSchema = new mongoose.Schema(
     availablePercentage: { type: Number, default: 0 },
 
     // Optional business details
-    expectedROI: { type: Number, required: true }, // e.g., 12.5
-    potentialRisks: [{ type: String }], // list of risks
-    keyBenefits: [{ type: String }], // list of benefits
-    milestones: {
-      type: [milestoneSchema],
-      required: false,
-    },
+    expectedROI: { type: Number, required: true },
+    potentialRisks: [{ type: String }],
+    keyBenefits: [{ type: String }],
 
-    // Optional management team
-    managementTeam: {
-      type: [managementTeamSchema],
-      required: false,
+    // NEW: Documents and Timeline
+    documents: {
+      type: [documentSchema],
+      validate: [
+        (val) => val.length <= 3,
+        "Maximum 3 documents allowed per project",
+      ],
     },
+    timeline: [timelineSchema],
 
     createdAt: { type: Date, default: Date.now },
   },

@@ -152,20 +152,18 @@ const editProject = async (req, res) => {
     }
 
     // Handle image update if new image is provided
-    if (req.file) {
+    if (req.files && req.files.image && req.files.image[0]) {
+      const file = req.files.image[0];
       try {
-        // Delete old image if exists
         if (project.image) {
           const oldPath = project.image.split("/").slice(-2).join("/");
           await supabase.storage.from("project-images").remove([oldPath]);
         }
 
-        // Upload new image
-        const imageUrl = await uploadProjectImage(req.file.buffer, project._id);
+        const imageUrl = await uploadProjectImage(file.buffer, project._id);
         project.image = imageUrl;
       } catch (imageError) {
         console.error("Error uploading image:", imageError);
-        // Continue without updating image
       }
     }
 
