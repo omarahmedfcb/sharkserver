@@ -49,6 +49,13 @@ const timelineSchema = new mongoose.Schema({
   },
 });
 
+const managementTeamSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  image: { type: String },
+  bio: { type: String },
+});
+
 const projectSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
@@ -97,6 +104,12 @@ const projectSchema = new mongoose.Schema(
       ],
     },
     timeline: [timelineSchema],
+
+    // Optional management team
+    managementTeam: {
+      type: [managementTeamSchema],
+      required: false,
+    },
 
     createdAt: { type: Date, default: Date.now },
   },

@@ -1,5 +1,6 @@
 const { Project, PROJECT_CATEGORIES } = require("../../models/projects");
 const { uploadProjectImage } = require("./uploadimage.controller");
+const { uploadProjectDocument, deleteProjectDocument } = require("./uploaddocument.controller");
 const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
@@ -60,6 +61,12 @@ const editProject = async (req, res) => {
       keyBenefits,
       managementTeam,
     } = req.body;
+
+    // Parse arrays from JSON strings
+    const timeline = req.body.timeline ? JSON.parse(req.body.timeline) : undefined;
+    const documentTitles = req.body.documentTitles
+      ? JSON.parse(req.body.documentTitles)
+      : [];
 
     // Validation
     if (
@@ -150,6 +157,21 @@ const editProject = async (req, res) => {
     if (managementTeam) {
       project.managementTeam = managementTeam;
     }
+    if (timeline !== undefined) {
+      project.timeline = timeline;
+    }
+
+    // Validate documents if provided
+    if (req.files && req.files.documents) {
+      if (req.files.documents.length > 3) {
+        return res.status(400).json({ message: "Maximum 3 documents allowed" });
+      }
+      if (req.files.documents.length !== documentTitles.length) {
+        return res
+          .status(400)
+          .json({ message: "Each document must have a title" });
+      }
+    }
 
     // Handle image update if new image is provided
     if (req.files && req.files.image && req.files.image[0]) {
@@ -165,6 +187,46 @@ const editProject = async (req, res) => {
       } catch (imageError) {
         console.error("Error uploading image:", imageError);
       }
+    }
+
+    // Handle documents update if new documents are provided
+    if (req.files && req.files.documents) {
+      // Delete old documents
+      if (project.documents && project.documents.length > 0) {
+        for (const doc of project.documents) {
+          try {
+            await deleteProjectDocument(doc.fileUrl);
+          } catch (deleteError) {
+            console.error("Error deleting old document:", deleteError);
+          }
+        }
+      }
+
+      // Upload new documents
+      const uploadedDocuments = [];
+      for (let i = 0; i < req.files.documents.length; i++) {
+        try {
+          const file = req.files.documents[i];
+          const title = documentTitles[i];
+
+          const fileUrl = await uploadProjectDocument(
+            file.buffer,
+            project._id,
+            file.originalname
+          );
+
+          uploadedDocuments.push({
+            title,
+            fileUrl,
+            uploadedAt: new Date(),
+          });
+        } catch (docError) {
+          console.error("Error uploading document:", docError);
+          // Continue with other documents
+        }
+      }
+
+      project.documents = uploadedDocuments;
     }
 
     await project.save();

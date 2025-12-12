@@ -21,9 +21,6 @@ const {
 const {
   editProject,
 } = require("../controllers/project/editproject.controller");
-const {
-  documentUpload,
-} = require("../controllers/project/uploaddocument.controller");
 const multer = require("multer");
 
 const router = express.Router();
@@ -32,6 +29,28 @@ const router = express.Router();
 const uploadFields = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    // For image field, accept only images
+    if (file.fieldname === "image") {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image files are allowed for image field"));
+      }
+    }
+    // For documents field, accept only PDFs
+    else if (file.fieldname === "documents") {
+      if (file.mimetype === "application/pdf") {
+        cb(null, true);
+      } else {
+        cb(new Error("Only PDF files are allowed for documents"));
+      }
+    }
+    // Reject any other fields
+    else {
+      cb(new Error(`Unexpected field: ${file.fieldname}`));
+    }
+  },
 }).fields([
   { name: "image", maxCount: 1 },
   { name: "documents", maxCount: 3 },
